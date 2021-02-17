@@ -8,4 +8,7 @@ type Workout struct {
 	Description string
 	Duration    time.Duration
 	Distance    int
+	StrokeRate  int
+	StrokeCount int
+	DragFactor  int
 }
