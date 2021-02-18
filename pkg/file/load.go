@@ -12,7 +12,8 @@ import (
 	"github.com/c-m-hunt/go-concept2/pkg/data"
 )
 
-func LoadWorkouts(path string) []data.Workout {
+// LoadWorkouts Loads workouts from a CSV file which has been downloaded from Concept2
+func LoadWorkouts(path string) data.Workouts {
 	in, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatalf("Cannot open file at %v", path)
@@ -29,19 +30,16 @@ func LoadWorkouts(path string) []data.Workout {
 
 	for i, record := range records {
 
+		// Skip the header record
 		if i == 0 {
 			continue
 		}
-
-		fmt.Println(record)
 
 		workoutTime, err := strconv.ParseFloat(record[4], 64)
 		if err != nil {
 			fmt.Printf("Could not load workout time for ID %v\n", record[0])
 		}
-
 		date, err := time.Parse("2006-01-02 15:04:05", record[1])
-
 		if err != nil {
 			log.Fatalf("Could not load date for ID %v\n", record[0])
 		}
@@ -61,15 +59,25 @@ func LoadWorkouts(path string) []data.Workout {
 		if err != nil {
 			fmt.Printf("Could not load drag factor for ID %v\n", record[0])
 		}
+		tc, err := strconv.Atoi(record[14])
+		if err != nil {
+			fmt.Printf("Could not load drag factor for ID %v\n", record[0])
+		}
+		isInt := false
+		if len(record[5]) > 0 {
+			isInt = true
+		}
 
 		wo := data.Workout{
-			ID:          record[0],
-			Date:        date,
-			Duration:    time.Duration(workoutTime*1000) * time.Millisecond,
-			Distance:    d,
-			StrokeRate:  sr,
-			StrokeCount: sc,
-			DragFactor:  df,
+			ID:           record[0],
+			Date:         date,
+			IsInterval:   isInt,
+			Duration:     time.Duration(workoutTime*1000) * time.Millisecond,
+			Distance:     d,
+			StrokeRate:   sr,
+			StrokeCount:  sc,
+			DragFactor:   df,
+			TotalCalores: tc,
 		}
 		wos = append(wos, wo)
 	}

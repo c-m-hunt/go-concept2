@@ -16,18 +16,19 @@ func TestItLoadsWorkouts(t *testing.T) {
 	}
 
 	type ex struct {
-		idx         int
-		ID          string
-		Duration    time.Duration
-		Distance    int
-		StrokeRate  int
-		StrokeCount int
-		DragFactor  int
+		idx          int
+		ID           string
+		Duration     time.Duration
+		Distance     int
+		StrokeRate   int
+		StrokeCount  int
+		DragFactor   int
+		TotalCalores int
 	}
 
 	tests := []ex{
-		{0, "51640663", time.Duration(1801400 * time.Millisecond), 7096, 22, 670, 122},
-		{273, "44085045", time.Duration(2544100 * time.Millisecond), 10000, 19, 818, 126},
+		{0, "51640663", time.Duration(1801400 * time.Millisecond), 7096, 22, 670, 122, 441},
+		{273, "44085045", time.Duration(2544100 * time.Millisecond), 10000, 19, 818, 126, 624},
 	}
 
 	for _, ex := range tests {
@@ -49,5 +50,11 @@ func TestItLoadsWorkouts(t *testing.T) {
 		if wos[ex.idx].DragFactor != ex.DragFactor {
 			t.Errorf("Workout drag factor not loaded correctly")
 		}
+		if wos[ex.idx].TotalCalores != ex.TotalCalores {
+			t.Errorf("Total calories not loaded correctly")
+		}
+	}
+	if wos[150].IsInterval == false {
+		t.Error("Not correctly loading is interval flag")
 	}
 }
