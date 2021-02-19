@@ -31,3 +31,19 @@ func (wos Workouts) GetLongestWorkout() *Workout {
 	}
 	return longest
 }
+
+// FilterShortWorkouts - Returns workouts which are greater than a certain distance
+func (wos Workouts) FilterShortWorkouts(minDist int) Workouts {
+	return wos.FilterWorkoutsByDistance(minDist, 99999999)
+}
+
+// FilterWorkoutsByDistance - Returns the workouts between two distances
+func (wos Workouts) FilterWorkoutsByDistance(minDist, maxDist int) Workouts {
+	wosOut := Workouts{}
+	for _, w := range wos {
+		if w.Distance >= minDist && w.Distance < maxDist {
+			wosOut = append(wosOut, w)
+		}
+	}
+	return wosOut
+}
