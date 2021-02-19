@@ -2,15 +2,34 @@ package file
 
 import (
 	"encoding/csv"
-	"fmt"
-	"log"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/c-m-hunt/go-concept2/pkg/data"
+	log "github.com/sirupsen/logrus"
 )
+
+func LoadWorkoutsDir(path string) data.Workouts {
+	wos := data.Workouts{}
+
+	filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
+
+		if d.IsDir() {
+			return nil
+		}
+		if filepath.Ext(path) == ".csv" {
+			newWos := LoadWorkouts(path)
+			wos = append(wos, newWos...)
+		}
+		return nil
+	})
+
+	return wos
+}
 
 // LoadWorkouts Loads workouts from a CSV file which has been downloaded from Concept2
 func LoadWorkouts(path string) data.Workouts {
@@ -37,31 +56,31 @@ func LoadWorkouts(path string) data.Workouts {
 
 		workoutTime, err := strconv.ParseFloat(record[4], 64)
 		if err != nil {
-			fmt.Printf("Could not load workout time for ID %v\n", record[0])
+			log.Debugf("Could not load workout time for ID %v\n", record[0])
 		}
 		date, err := time.Parse("2006-01-02 15:04:05", record[1])
 		if err != nil {
-			log.Fatalf("Could not load date for ID %v\n", record[0])
+			log.Debugf("Could not load date for ID %v\n", record[0])
 		}
 		d, err := strconv.Atoi(record[7])
 		if err != nil {
-			fmt.Printf("Could not load distance for ID %v\n", record[0])
+			log.Debugf("Could not load distance for ID %v\n", record[0])
 		}
 		sr, err := strconv.Atoi(record[9])
 		if err != nil {
-			fmt.Printf("Could not load stroke rate for ID %v\n", record[0])
+			log.Debugf("Could not load stroke rate for ID %v\n", record[0])
 		}
 		sc, err := strconv.Atoi(record[10])
 		if err != nil {
-			fmt.Printf("Could not load stroke count for ID %v\n", record[0])
+			log.Debugf("Could not load stroke count for ID %v\n", record[0])
 		}
 		df, err := strconv.Atoi(record[16])
 		if err != nil {
-			fmt.Printf("Could not load drag factor for ID %v\n", record[0])
+			log.Debugf("Could not load drag factor for ID %v\n", record[0])
 		}
 		tc, err := strconv.Atoi(record[14])
 		if err != nil {
-			fmt.Printf("Could not load drag factor for ID %v\n", record[0])
+			log.Debugf("Could not load drag factor for ID %v\n", record[0])
 		}
 		isInt := false
 		if len(record[5]) > 0 {

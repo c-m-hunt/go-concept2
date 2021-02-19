@@ -47,3 +47,11 @@ func (wos Workouts) FilterWorkoutsByDistance(minDist, maxDist int) Workouts {
 	}
 	return wosOut
 }
+
+func (wos Workouts) GetTotalDistance() int {
+	d := 0
+	for _, w := range wos {
+		d += w.Distance
+	}
+	return d
+}

@@ -7,10 +7,18 @@ import (
 	"github.com/c-m-hunt/go-concept2/pkg/file"
 )
 
+func TestItLoadsWorksoutsFromDir(t *testing.T) {
+	fp := "./testdata"
+	wos := file.LoadWorkoutsDir(fp)
+	if len(wos) != 1282 {
+		t.Errorf("Got wrong amount of workouts. Expected %v, got %v", 1282, len(wos))
+	}
+}
+
 func TestItLoadsWorkouts(t *testing.T) {
-	fp := "./testdata/c2data.csv"
+	fp := "./testdata/concept2-season-2021.csv"
 	wos := file.LoadWorkouts(fp)
-	expectedLength := 274
+	expectedLength := 277
 	if len(wos) != expectedLength {
 		t.Errorf("Not the right amount of workouts loaded. Wanted %v, got %v", expectedLength, len(wos))
 	}
@@ -27,8 +35,8 @@ func TestItLoadsWorkouts(t *testing.T) {
 	}
 
 	tests := []ex{
-		{0, "51640663", time.Duration(1801400 * time.Millisecond), 7096, 22, 670, 122, 441},
-		{273, "44085045", time.Duration(2544100 * time.Millisecond), 10000, 19, 818, 126, 624},
+		{3, "51640663", time.Duration(1801400 * time.Millisecond), 7096, 22, 670, 122, 441},
+		{276, "44085045", time.Duration(2544100 * time.Millisecond), 10000, 19, 818, 126, 624},
 	}
 
 	for _, ex := range tests {
@@ -54,7 +62,7 @@ func TestItLoadsWorkouts(t *testing.T) {
 			t.Errorf("Total calories not loaded correctly")
 		}
 	}
-	if wos[150].IsInterval == false {
+	if wos[153].IsInterval == false {
 		t.Error("Not correctly loading is interval flag")
 	}
 }
