@@ -1,4 +1,4 @@
-package file
+package loader
 
 import (
 	"encoding/csv"
@@ -33,6 +33,7 @@ func LoadWorkoutsDir(path string) (data.Workouts, error) {
 				close(chOut)
 				return
 			}
+
 			if fi.d.IsDir() {
 				continue
 			}

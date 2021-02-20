@@ -1,16 +1,16 @@
-package file_test
+package loader_test
 
 import (
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/c-m-hunt/go-concept2/pkg/file"
+	"github.com/c-m-hunt/go-concept2/pkg/loader"
 )
 
 func TestItLoadsWorksoutsFromDir(t *testing.T) {
 	fp := "./testdata"
-	wos, _ := file.LoadWorkoutsDir(fp)
+	wos, _ := loader.LoadWorkoutsDir(fp)
 	if len(wos) != 1282 {
 		t.Errorf("Got wrong amount of workouts. Expected %v, got %v", 1282, len(wos))
 	}
@@ -21,7 +21,7 @@ func TestItLoadsWorksoutsFromString(t *testing.T) {
 "44023457","2020-04-30 12:42:00","5000m row","""21:11.3""","1271.3","","","5000","","21","442","2:07.1","170","886","311","","126","42","Hwt","Indoor Rower","No",""
 "44023458","2020-04-30 12:21:00","1:07 row","""1:07.5""","67.5","","","242","","20","21","2:19.4","129","744","14","","126","42","Hwt","Indoor Rower","No",""`
 	csvReader := strings.NewReader(csv)
-	wos, _ := file.CreateWorkoutsFromCSV(csvReader)
+	wos, _ := loader.CreateWorkoutsFromCSV(csvReader)
 	if len(wos) != 2 {
 		t.Errorf("Didn't load correct amount of records")
 	}
@@ -29,7 +29,7 @@ func TestItLoadsWorksoutsFromString(t *testing.T) {
 
 func TestItLoadsWorkouts(t *testing.T) {
 	fp := "./testdata/concept2-season-2021.csv"
-	wos, _ := file.LoadWorkouts(fp)
+	wos, _ := loader.LoadWorkouts(fp)
 	expectedLength := 277
 	if len(wos) != expectedLength {
 		t.Errorf("Not the right amount of workouts loaded. Wanted %v, got %v", expectedLength, len(wos))
