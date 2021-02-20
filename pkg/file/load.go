@@ -2,6 +2,7 @@ package file
 
 import (
 	"encoding/csv"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -13,7 +14,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func LoadWorkoutsDir(path string) data.Workouts {
+// LoadWorkoutsDir Loads all the files in directory
+func LoadWorkoutsDir(path string) (data.Workouts, error) {
 	wos := data.Workouts{}
 
 	filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
@@ -22,23 +24,22 @@ func LoadWorkoutsDir(path string) data.Workouts {
 			return nil
 		}
 		if filepath.Ext(path) == ".csv" {
-			newWos := LoadWorkouts(path)
+			newWos, err := LoadWorkouts(path)
+			if err != nil {
+				panic(err)
+			}
 			wos = append(wos, newWos...)
 		}
 		return nil
 	})
 
-	return wos
+	return wos, nil
 }
 
-// LoadWorkouts Loads workouts from a CSV file which has been downloaded from Concept2
-func LoadWorkouts(path string) data.Workouts {
-	in, err := os.ReadFile(path)
-	if err != nil {
-		log.Fatalf("Cannot open file at %v", path)
-	}
+// CreateWorkoutsFromCSV Creates workouts struct from CSV reader
+func CreateWorkoutsFromCSV(csvData io.Reader) (data.Workouts, error) {
 
-	r := csv.NewReader(strings.NewReader(string(in)))
+	r := csv.NewReader(csvData)
 	records, err := r.ReadAll()
 
 	if err != nil {
@@ -100,5 +101,15 @@ func LoadWorkouts(path string) data.Workouts {
 		}
 		wos = append(wos, wo)
 	}
-	return wos
+	return wos, nil
+}
+
+// LoadWorkouts Loads workouts from a CSV file which has been downloaded from Concept2
+func LoadWorkouts(path string) (data.Workouts, error) {
+	in, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("Cannot open file at %v", path)
+	}
+	sr := strings.NewReader(string(in))
+	return CreateWorkoutsFromCSV(sr)
 }
