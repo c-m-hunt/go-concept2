@@ -2,6 +2,7 @@ package file
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -15,23 +16,46 @@ import (
 )
 
 // LoadWorkoutsDir Loads all the files in directory
+// Potentially overly complicated. Was hoping this pipeline would be quicker
 func LoadWorkoutsDir(path string) (data.Workouts, error) {
 	wos := data.Workouts{}
-
-	filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
-
-		if d.IsDir() {
-			return nil
-		}
-		if filepath.Ext(path) == ".csv" {
-			newWos, err := LoadWorkouts(path)
-			if err != nil {
-				panic(err)
+	type fileInput struct {
+		p string
+		d fs.DirEntry
+	}
+	chOut := make(chan data.Workouts)
+	chIn := make(chan fileInput)
+	fmt.Println(path)
+	go func() {
+		for {
+			fi, ok := <-chIn
+			if !ok {
+				close(chOut)
+				return
 			}
-			wos = append(wos, newWos...)
+			if fi.d.IsDir() {
+				continue
+			}
+			if filepath.Ext(fi.p) == ".csv" {
+				newWos, err := LoadWorkouts(fi.p)
+				if err != nil {
+					panic(err)
+				}
+				chOut <- newWos
+			}
 		}
-		return nil
-	})
+	}()
+	go func() {
+		filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
+			chIn <- fileInput{path, d}
+			return nil
+		})
+		close(chIn)
+	}()
+
+	for newWos := range chOut {
+		wos = append(wos, newWos...)
+	}
 
 	return wos, nil
 }
