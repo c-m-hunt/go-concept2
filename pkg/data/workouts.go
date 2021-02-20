@@ -1,3 +1,4 @@
+// Package data manages the operations on workouts
 package data
 
 import (

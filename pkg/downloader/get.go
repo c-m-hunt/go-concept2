@@ -1,3 +1,4 @@
+// Package downloader manages grabbing CSV from Concept2 website
 package downloader
 
 import (

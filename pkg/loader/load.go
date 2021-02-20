@@ -1,3 +1,4 @@
+// Package loader manages loading CSV data into workouts struct
 package loader
 
 import (
