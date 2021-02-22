@@ -1,6 +1,7 @@
 package loader_test
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -52,29 +53,36 @@ func TestItLoadsWorkouts(t *testing.T) {
 	}
 
 	for _, ex := range tests {
-		if wos[ex.idx].ID != ex.ID {
-			t.Errorf("Workout ID not loaded correctly")
-		}
-		if wos[ex.idx].Duration != ex.Duration {
-			t.Errorf("Workout distance not loaded correctly. Got %v, expected %v", wos[ex.idx].Duration, ex.Duration)
-		}
-		if wos[ex.idx].Distance != ex.Distance {
-			t.Errorf("Workout distance not loaded correctly")
-		}
-		if wos[ex.idx].StrokeCount != ex.StrokeCount {
-			t.Errorf("Stroke count not loaded correctly")
-		}
-		if wos[ex.idx].StrokeRate != ex.StrokeRate {
-			t.Errorf("Stroke rate not loaded correctly")
-		}
-		if wos[ex.idx].DragFactor != ex.DragFactor {
-			t.Errorf("Workout drag factor not loaded correctly")
-		}
-		if wos[ex.idx].TotalCalores != ex.TotalCalores {
-			t.Errorf("Total calories not loaded correctly")
-		}
+		t.Run(fmt.Sprintf("Testing record %v", ex.ID), func(t *testing.T) {
+			if wos[ex.idx].ID != ex.ID {
+				t.Errorf("Workout ID not loaded correctly")
+			}
+			if wos[ex.idx].Duration != ex.Duration {
+				t.Errorf("Workout distance not loaded correctly. Got %v, expected %v", wos[ex.idx].Duration, ex.Duration)
+			}
+			if wos[ex.idx].Distance != ex.Distance {
+				t.Errorf("Workout distance not loaded correctly")
+			}
+			if wos[ex.idx].StrokeCount != ex.StrokeCount {
+				t.Errorf("Stroke count not loaded correctly")
+			}
+			if wos[ex.idx].StrokeRate != ex.StrokeRate {
+				t.Errorf("Stroke rate not loaded correctly")
+			}
+			if wos[ex.idx].DragFactor != ex.DragFactor {
+				t.Errorf("Workout drag factor not loaded correctly")
+			}
+			if wos[ex.idx].TotalCalores != ex.TotalCalores {
+				t.Errorf("Total calories not loaded correctly. Got %v, expected %v", wos[ex.idx].TotalCalores, ex.TotalCalores)
+			}
+
+		})
+
 	}
-	if wos[153].IsInterval == false {
-		t.Error("Not correctly loading is interval flag")
-	}
+	t.Run("Testing intervals", func(t *testing.T) {
+		if wos[153].IsInterval == false {
+			t.Error("Not correctly loading is interval flag")
+		}
+	})
+
 }

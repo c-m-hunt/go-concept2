@@ -1,9 +1,6 @@
 // Package downloader manages grabbing CSV from Concept2 website
-// Simply grab a downloader and either call GetSeasons or GetAllSeasons
-//   path, _ := filepath.Abs("./data")
-//   dl := downloader.NewDownloader("myuser", "mypassword", path)
-//   dl.SetHeadless(false)
-//   dl.GetSeasons([]string{"2021"})
+// You need to have an account at https://log.concept2.com.
+// This downloads the season CSV files from the https://log.concept2.com/history page.
 package downloader
 
 import (
@@ -22,6 +19,11 @@ import (
 )
 
 // Downloader manages the download options
+// Simply grab a downloader and either call GetSeasons or GetAllSeasons
+//   path, _ := filepath.Abs("./data")
+//   dl := downloader.NewDownloader("myuser", "mypassword", path)
+//   dl.SetHeadless(false)
+//   dl.GetSeasons([]string{"2021"})
 type Downloader struct {
 	// Username Concept 2 username
 	Username string
@@ -33,6 +35,8 @@ type Downloader struct {
 }
 
 // NewDownloader generates a new downloader with default options
+// The username and password are for https://log.concept2.com
+// The path is the path which you wish the data files to be downloaded to
 func NewDownloader(username string, password string, path string) Downloader {
 	return Downloader{
 		Username: username,
@@ -43,11 +47,14 @@ func NewDownloader(username string, password string, path string) Downloader {
 }
 
 // SetHeadless sets whether the browser should be headless or not
+// By default it's headless but if you want to see the browser do its thing,
+// you can set this to true and browser will show during operations
 func (dl *Downloader) SetHeadless(headless bool) {
 	dl.headless = headless
 }
 
-// GetAllSeasons downloads all of the available seasons
+// GetAllSeasons downloads all of the available seasons from the history
+// page https://log.concept2.com/history
 func (dl Downloader) GetAllSeasons() {
 	ctx, cancel := (&dl).login()
 	defer cancel()
@@ -70,8 +77,9 @@ func (dl Downloader) GetAllSeasons() {
 	dl.downloadSeasons(ctx, seasons)
 }
 
-// GetSeasons downloads the seasons CSV data from C2 site
-// into the Downloader struct's path
+// GetSeasons downloads the seasons CSV data from Concept2 site
+// into the Downloader struct's path for the specified seasons
+// Use the final year of the season so for season 2020/21, use 2021
 func (dl Downloader) GetSeasons(seasons []string) {
 	ctx, cancel := (&dl).login()
 	defer cancel()
